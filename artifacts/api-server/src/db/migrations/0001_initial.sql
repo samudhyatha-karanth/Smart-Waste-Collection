@@ -1,0 +1,3 @@
+-- The development schema is applied by migrateAndSeed using the same reviewed
+-- SQL in schema.ts. This file is kept as the human-readable migration record.
+-- It intentionally includes the complete Smart Waste domain schema and indexes.

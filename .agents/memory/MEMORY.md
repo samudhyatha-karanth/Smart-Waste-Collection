@@ -1,0 +1,1 @@
+- [API client typecheck compatibility](api-client-typecheck.md) — generated browser client needs iterable DOM types during composite builds.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Smart Waste Collection"
+description = "A municipal operations platform connecting citizens, collectors, and administrators for scheduled waste collection, issue reporting, route execution, analytics, and safe AI waste guidance."
+version = "1.0.0"
+id = "artifacts/smart-waste"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22073
+
+[services.development]
+run = "pnpm --filter @workspace/smart-waste run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/smart-waste", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/smart-waste/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22073"
+BASE_PATH = "/"

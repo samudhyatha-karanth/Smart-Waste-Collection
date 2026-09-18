@@ -1,22 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Smart Waste Collection Management API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: citizen
+  - name: collector
+  - name: admin
+  - name: ai
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +26,691 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /citizen/dashboard:
+    get:
+      operationId: getCitizenDashboard
+      tags: [citizen]
+      responses:
+        "200":
+          description: Citizen dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CitizenDashboard"
+  /citizen/schedules:
+    get:
+      operationId: getCitizenSchedules
+      tags: [citizen]
+      responses:
+        "200":
+          description: Collection schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Schedule"
+  /citizen/complaints:
+    get:
+      operationId: getCitizenComplaints
+      tags: [citizen]
+      responses:
+        "200":
+          description: Citizen complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Complaint"
+    post:
+      operationId: createCitizenComplaint
+      tags: [citizen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintInput"
+      responses:
+        "201":
+          description: Created complaint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+  /citizen/complaints/{id}:
+    get:
+      operationId: getCitizenComplaint
+      tags: [citizen]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Complaint detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintDetail"
+  /citizen/notifications:
+    get:
+      operationId: getCitizenNotifications
+      tags: [citizen]
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+  /citizen/notifications/{id}/read:
+    patch:
+      operationId: markCitizenNotificationRead
+      tags: [citizen]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+  /collector/dashboard:
+    get:
+      operationId: getCollectorDashboard
+      tags: [collector]
+      responses:
+        "200":
+          description: Collector dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectorDashboard"
+  /collector/assignments:
+    get:
+      operationId: getCollectorAssignments
+      tags: [collector]
+      responses:
+        "200":
+          description: Assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Assignment"
+  /collector/assignments/{id}/status:
+    patch:
+      operationId: updateCollectorAssignmentStatus
+      tags: [collector]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignmentStatusInput"
+      responses:
+        "200":
+          description: Updated assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assignment"
+  /collector/notifications:
+    get:
+      operationId: getCollectorNotifications
+      tags: [collector]
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+  /admin/dashboard:
+    get:
+      operationId: getAdminDashboard
+      tags: [admin]
+      responses:
+        "200":
+          description: Admin dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDashboard"
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      parameters:
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /admin/users/{id}/status:
+    patch:
+      operationId: updateAdminUserStatus
+      tags: [admin]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserStatusInput"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /admin/zones:
+    get:
+      operationId: getAdminZones
+      tags: [admin]
+      responses:
+        "200":
+          description: Zones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Zone"
+    post:
+      operationId: createAdminZone
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ZoneInput"
+      responses:
+        "201":
+          description: Created zone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Zone"
+  /admin/complaints:
+    get:
+      operationId: getAdminComplaints
+      tags: [admin]
+      parameters:
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: All complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Complaint"
+  /admin/complaints/{id}:
+    patch:
+      operationId: updateAdminComplaint
+      tags: [admin]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintUpdate"
+      responses:
+        "200":
+          description: Updated complaint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+  /admin/overflow:
+    get:
+      operationId: getAdminOverflowReports
+      tags: [admin]
+      responses:
+        "200":
+          description: Overflow reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OverflowReport"
+  /admin/analytics:
+    get:
+      operationId: getAdminAnalytics
+      tags: [admin]
+      responses:
+        "200":
+          description: Analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analytics"
+  /admin/audit-logs:
+    get:
+      operationId: getAdminAuditLogs
+      tags: [admin]
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLog"
+  /ai/waste-assistant:
+    post:
+      operationId: askWasteAssistant
+      tags: [ai]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WasteQuestion"
+      responses:
+        "200":
+          description: Advisory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WasteAdvisory"
+  /ai/history:
+    get:
+      operationId: getAiHistory
+      tags: [ai]
+      responses:
+        "200":
+          description: Advisory history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WasteAdvisoryHistory"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Search:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        status: { type: string }
+    User:
+      type: object
+      required: [id, fullName, email, role, status]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: ["string", "null"] }
+        role: { type: string, enum: [citizen, collector, admin] }
+        status: { type: string, enum: [active, inactive, suspended] }
+        address: { type: ["string", "null"] }
+        zone: { type: ["string", "null"] }
+        initials: { type: string }
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+    RegisterInput:
+      type: object
+      required: [fullName, email, password, phone, address]
+      properties:
+        fullName: { type: string, minLength: 2, maxLength: 150 }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 30 }
+        password: { type: string, minLength: 8 }
+        address: { type: string, minLength: 5 }
+        zone: { type: ["string", "null"] }
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    Schedule:
+      type: object
+      required: [id, date, time, wasteType, location, zone, status]
+      properties:
+        id: { type: string, format: uuid }
+        date: { type: string }
+        time: { type: string }
+        wasteType: { type: string }
+        location: { type: string }
+        zone: { type: string }
+        status: { type: string }
+        collector: { type: ["string", "null"] }
+    Assignment:
+      allOf:
+        - $ref: "#/components/schemas/Schedule"
+        - type: object
+          required: [collectorId]
+          properties:
+            collectorId: { type: string, format: uuid }
+            notes: { type: ["string", "null"] }
+            failureReason: { type: ["string", "null"] }
+    Complaint:
+      type: object
+      required: [id, category, title, description, location, severity, status, createdAt, citizenName]
+      properties:
+        id: { type: string, format: uuid }
+        category: { type: string }
+        title: { type: string }
+        description: { type: string }
+        location: { type: string }
+        severity: { type: string, enum: [low, medium, high, critical] }
+        status: { type: string }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        citizenName: { type: string }
+        assignedCollector: { type: ["string", "null"] }
+    ComplaintInput:
+      type: object
+      required: [category, title, description, location, severity]
+      properties:
+        category: { type: string }
+        title: { type: string, minLength: 5, maxLength: 120 }
+        description: { type: string, minLength: 10, maxLength: 2000 }
+        location: { type: string, minLength: 3 }
+        latitude: { type: ["number", "null"], minimum: -90, maximum: 90 }
+        longitude: { type: ["number", "null"], minimum: -180, maximum: 180 }
+        severity: { type: string, enum: [low, medium, high, critical] }
+    ComplaintUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [submitted, acknowledged, assigned, in_progress, resolved, rejected] }
+        resolutionNote: { type: ["string", "null"] }
+        assignedCollector: { type: ["string", "null"] }
+    ComplaintDetail:
+      allOf:
+        - $ref: "#/components/schemas/Complaint"
+        - type: object
+          required: [timeline]
+          properties:
+            timeline:
+              type: array
+              items:
+                $ref: "#/components/schemas/TimelineEvent"
+    TimelineEvent:
+      type: object
+      required: [status, timestamp, note]
+      properties:
+        status: { type: string }
+        timestamp: { type: string }
+        note: { type: ["string", "null"] }
+    Notification:
+      type: object
+      required: [id, type, title, message, createdAt, read]
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string }
+        title: { type: string }
+        message: { type: string }
+        createdAt: { type: string }
+        read: { type: boolean }
+    CitizenDashboard:
+      type: object
+      required: [nextCollection, openComplaints, unreadNotifications, tip, recentActivity]
+      properties:
+        nextCollection: { $ref: "#/components/schemas/Schedule" }
+        openComplaints: { type: integer }
+        unreadNotifications: { type: integer }
+        tip: { type: string }
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+    CollectorDashboard:
+      type: object
+      required: [today, pending, completed, missed, incidents, assignments]
+      properties:
+        today: { type: integer }
+        pending: { type: integer }
+        completed: { type: integer }
+        missed: { type: integer }
+        incidents: { type: integer }
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Assignment"
+    AdminDashboard:
+      type: object
+      required: [citizens, collectors, collectionPoints, todayCollections, completedCollections, missedCollections, openComplaints, criticalComplaints, overflowReports, resolutionRate, completionRate, activity]
+      properties:
+        citizens: { type: integer }
+        collectors: { type: integer }
+        collectionPoints: { type: integer }
+        todayCollections: { type: integer }
+        completedCollections: { type: integer }
+        missedCollections: { type: integer }
+        openComplaints: { type: integer }
+        criticalComplaints: { type: integer }
+        overflowReports: { type: integer }
+        resolutionRate: { type: number }
+        completionRate: { type: number }
+        activity:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+    Activity:
+      type: object
+      required: [title, description, timestamp, tone]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        timestamp: { type: string }
+        tone: { type: string }
+    Zone:
+      type: object
+      required: [id, name, code, active, points, residents]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        code: { type: string }
+        active: { type: boolean }
+        points: { type: integer }
+        residents: { type: integer }
+    ZoneInput:
+      type: object
+      required: [name, code]
+      properties:
+        name: { type: string, minLength: 2 }
+        code: { type: string, minLength: 2 }
+        description: { type: ["string", "null"] }
+    UserStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [active, inactive, suspended] }
+    AssignmentStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [accepted, in_progress, completed, missed, unable_to_collect, skipped] }
+        notes: { type: ["string", "null"] }
+        failureReason: { type: ["string", "null"] }
+    OverflowReport:
+      type: object
+      required: [id, location, severity, status, createdAt, description]
+      properties:
+        id: { type: string, format: uuid }
+        location: { type: string }
+        severity: { type: string }
+        status: { type: string }
+        createdAt: { type: string }
+        description: { type: string }
+        assignedCollector: { type: ["string", "null"] }
+    Analytics:
+      type: object
+      required: [collections, complaints, wasteCategories, zones]
+      properties:
+        collections:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricPoint"
+        complaints:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricPoint"
+        wasteCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricPoint"
+        zones:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricPoint"
+    MetricPoint:
+      type: object
+      required: [label, value]
+      properties:
+        label: { type: string }
+        value: { type: number }
+    AuditLog:
+      type: object
+      required: [id, action, entity, timestamp, actor]
+      properties:
+        id: { type: string, format: uuid }
+        action: { type: string }
+        entity: { type: string }
+        timestamp: { type: string }
+        actor: { type: string }
+        metadata: { type: string }
+    WasteQuestion:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string, minLength: 3, maxLength: 1000 }
+        context: { type: ["string", "null"] }
+    WasteAdvisory:
+      type: object
+      required: [answer, category, recommendedAction, confidence, safetyNote, localRuleNote]
+      properties:
+        answer: { type: string }
+        category: { type: string }
+        recommendedAction: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        safetyNote: { type: ["string", "null"] }
+        localRuleNote: { type: ["string", "null"] }
+    WasteAdvisoryHistory:
+      allOf:
+        - $ref: "#/components/schemas/WasteAdvisory"
+        - type: object
+          required: [id, question, createdAt]
+          properties:
+            id: { type: string, format: uuid }
+            question: { type: string }
+            createdAt: { type: string }
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }

@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 42 32% 96%;
+  --foreground: 176 34% 16%;
+  --border: 38 21% 86%;
+  --input: 38 21% 82%;
+  --ring: 163 48% 34%;
+  --card: 42 38% 99%;
+  --card-foreground: 176 34% 16%;
+  --primary: 163 48% 31%;
+  --primary-foreground: 42 38% 98%;
+  --secondary: 43 52% 87%;
+  --secondary-foreground: 176 34% 17%;
+  --muted: 42 25% 91%;
+  --muted-foreground: 175 14% 42%;
+  --accent: 27 72% 58%;
+  --accent-foreground: 175 38% 15%;
+  --destructive: 3 62% 49%;
+  --destructive-foreground: 42 38% 98%;
+  --app-font-sans: 'Manrope', ui-sans-serif, sans-serif;
+  --app-font-mono: 'DM Mono', ui-monospace, monospace;
+  --radius: 0.7rem;
+  --sidebar: 176 34% 16%;
+  --sidebar-foreground: 42 35% 92%;
+  --sidebar-border: 176 24% 25%;
+  --sidebar-accent: 163 42% 24%;
+  --shadow-soft: 0 14px 38px hsl(176 34% 16% / .08);
+}
+
+.dark {
+  --background: 176 32% 11%;
+  --foreground: 42 30% 93%;
+  --border: 176 20% 25%;
+  --input: 176 20% 29%;
+  --card: 176 27% 15%;
+  --card-foreground: 42 30% 93%;
+  --primary: 157 46% 52%;
+  --primary-foreground: 176 32% 11%;
+  --secondary: 176 19% 24%;
+  --secondary-foreground: 42 30% 93%;
+  --muted: 176 19% 21%;
+  --muted-foreground: 42 15% 68%;
+  --accent: 28 75% 61%;
+  --accent-foreground: 176 32% 11%;
+  --destructive: 3 64% 59%;
+  --destructive-foreground: 42 30% 93%;
+  --sidebar: 176 38% 8%;
+  --sidebar-foreground: 42 30% 93%;
+  --sidebar-border: 176 22% 19%;
+  --sidebar-accent: 176 27% 17%;
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { background: hsl(var(--background)); }
+  body { @apply font-sans antialiased bg-background text-foreground; margin: 0; }
+  button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse-ring { 0%, 100% { opacity: .45; transform: scale(.96); } 50% { opacity: .9; transform: scale(1); } }
+.rise { animation: rise .42s ease-out both; }
+.delay-1 { animation-delay: .06s; }
+.delay-2 { animation-delay: .12s; }
+.delay-3 { animation-delay: .18s; }
+.dot-pulse { animation: pulse-ring 2.6s ease-in-out infinite; }
+.app-shell { min-height: 100dvh; background: hsl(var(--background)); }
+.sidebar { background: hsl(var(--sidebar)); color: hsl(var(--sidebar-foreground)); }
+.sidebar-link { color: hsl(var(--sidebar-foreground) / .66); transition: color .2s, background-color .2s, transform .2s; }
+.sidebar-link:hover, .sidebar-link.active { color: hsl(var(--sidebar-foreground)); background: hsl(var(--sidebar-accent)); }
+.sidebar-link.active { box-shadow: inset 3px 0 hsl(var(--accent)); }
+.surface { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: var(--shadow-soft); }
+.surface-flat { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+.eyebrow { color: hsl(var(--primary)); font: 500 10px/1 var(--app-font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.mono { font-family: var(--app-font-mono); }
+.status { display: inline-flex; align-items: center; gap: .35rem; border-radius: 999px; padding: .28rem .55rem; font: 500 10px/1 var(--app-font-mono); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.status::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.status-green { color: hsl(163 48% 31%); background: hsl(163 48% 31% / .11); }
+.status-amber { color: hsl(28 77% 39%); background: hsl(28 77% 39% / .12); }
+.status-red { color: hsl(3 62% 46%); background: hsl(3 62% 46% / .11); }
+.status-slate { color: hsl(175 14% 42%); background: hsl(175 14% 42% / .1); }
+.metric-number { font-size: clamp(1.7rem, 3vw, 2.5rem); letter-spacing: -.07em; font-weight: 800; line-height: 1; }
+.progress-track { height: 6px; overflow: hidden; border-radius: 99px; background: hsl(var(--muted)); }
+.progress-fill { height: 100%; border-radius: inherit; background: hsl(var(--primary)); transition: width .45s ease; }
+.field { height: 2.75rem; width: 100%; border-radius: .55rem; border: 1px solid hsl(var(--input)); background: hsl(var(--card)); padding: 0 .75rem; font-size: .8125rem; outline: none; }
+.field:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--primary) / .13); }
+textarea.field { height: auto; }
+.grid-lines { background-image: linear-gradient(hsl(var(--border) / .42) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / .42) 1px, transparent 1px); background-size: 28px 28px; }
+.noise::after { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E"); z-index: 40; }
+@media (max-width: 767px) {
+  .sidebar { position: fixed; z-index: 30; inset: 0 auto 0 0; width: 274px; transform: translateX(-100%); transition: transform .25s ease; }
+  .sidebar.open { transform: translateX(0); }
+}

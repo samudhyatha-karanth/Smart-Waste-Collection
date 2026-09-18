@@ -1,15 +1,15 @@
-# [Project name]
+# Smart Waste Collection
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+CivicCycle connects residents, collection crews, and municipal operations teams around reliable waste collection and issue resolution.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/smart-waste run dev` — run the web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL`, `SESSION_SECRET`, and `GEMINI_API_KEY`
 
 ## Stack
 
@@ -22,23 +22,32 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/smart-waste` — React/Vite web application and shared visual system
+- `artifacts/api-server` — Express API, session auth, migrations, seed data, and role-scoped routes
+- `artifacts/api-server/src/db/schema.ts` — PostgreSQL schema used by development initialization
+- `lib/api-spec/openapi.yaml` — source of truth for generated API hooks and Zod contracts
+- `artifacts/smart-waste/src/index.css` — CivicCycle theme tokens
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Opaque, database-backed HTTP sessions keep authentication server-owned and avoid exposing role decisions to the browser.
+- All dashboards and operational lists are served from PostgreSQL queries; the web app uses generated OpenAPI hooks rather than mock state.
+- Waste guidance uses a server-only Gemini call when configured and a conservative deterministic fallback when the model is unavailable.
+- The same API enforces citizen, collector, and admin boundaries regardless of frontend navigation.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Citizens can see collection schedules, submit and track complaints, read notifications, and ask for safe waste-segregation guidance. Collectors can work their assigned collection queue and update outcomes. Administrators can monitor system health, triage complaints, manage users/zones, inspect analytics, and review audit events.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+No additional user preferences recorded.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The API initializes its development schema and demo data before listening; demo accounts use the documented development password `WasteDemo#2026`.
+- Run API codegen after changing `lib/api-spec/openapi.yaml`, then run the workspace typecheck.
+- The frontend workflow supplies `PORT` and `BASE_PATH`; do not start the Vite app directly without them.
 
 ## Pointers
 
